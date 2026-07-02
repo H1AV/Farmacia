@@ -72,7 +72,8 @@ export default function ColaDespacho() {
                 Hora: {new Date(boleta.fecha).toLocaleTimeString()}
               </p>
               <p className="text-sm font-medium text-gray-700">
-                {boleta.ItemVentas?.length || 0} productos a preparar
+                {/* CAMBIO: Usamos 'items' en minúscula */}
+                {boleta.items?.length || 0} productos a preparar
               </p>
             </div>
           ))
@@ -82,7 +83,7 @@ export default function ColaDespacho() {
       {/* Modal / Detalle del Pedido */}
       {pedidoSeleccionado && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+          <div className="bg-white rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
             
             <div className="bg-blue-600 p-4 text-white flex justify-between items-center">
               <h3 className="text-xl font-bold">Preparar Boleta #{pedidoSeleccionado.nro_boleta}</h3>
@@ -95,21 +96,37 @@ export default function ColaDespacho() {
               <table className="w-full text-left border-collapse">
                 <thead className="bg-gray-100 text-gray-600 text-sm">
                   <tr>
-                    <th className="p-3 rounded-l-lg">Producto</th>
+                    {/* CAMBIO: Agregamos la columna de Código */}
+                    <th className="p-3 rounded-l-lg">Código</th>
+                    <th className="p-3">Producto</th>
                     <th className="p-3 text-center">Cantidad</th>
                     <th className="p-3 text-center rounded-r-lg">Alertas</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {pedidoSeleccionado.ItemVentas?.map((item, idx) => (
+                  {/* CAMBIO: Usamos 'items' en vez de ItemVentas */}
+                  {pedidoSeleccionado.items?.map((item, idx) => (
                     <tr key={idx} className="hover:bg-gray-50">
-                      <td className="p-3 font-medium text-gray-800">{item.Medicamento?.nombre}</td>
-                      <td className="p-3 text-center text-lg font-bold text-blue-600">{item.cantidad}</td>
+                      {/* CAMBIO: Mostramos el código del medicamento */}
+                      <td className="p-3 font-mono text-sm text-gray-500">
+                        {item.medicamento?.cod_medicamento}
+                      </td>
+                      {/* CAMBIO: Usamos 'medicamento' en minúscula */}
+                      <td className="p-3 font-medium text-gray-800">
+                        {item.medicamento?.nombre}
+                      </td>
+                      <td className="p-3 text-center text-lg font-bold text-blue-600">
+                        {item.cantidad}
+                      </td>
                       <td className="p-3 text-center">
-                        {item.Medicamento?.requiere_receta ? (
-                          <span title="Requiere Receta Retenida" className="text-red-500 text-xl cursor-help animate-bounce inline-block">🔴 📄</span>
+                        {item.medicamento?.requiere_receta ? (
+                          <span title="¡ATENCIÓN! Requiere Receta Retenida" className="text-red-600 font-bold bg-red-100 px-3 py-1 rounded-full animate-pulse flex items-center justify-center gap-1">
+                            <span>🔴</span> Receta Obligatoria
+                          </span>
                         ) : (
-                          <span className="text-green-500">✅ Libre</span>
+                          <span className="text-green-500 font-bold bg-green-50 px-3 py-1 rounded-full">
+                            ✅ Venta Libre
+                          </span>
                         )}
                       </td>
                     </tr>
