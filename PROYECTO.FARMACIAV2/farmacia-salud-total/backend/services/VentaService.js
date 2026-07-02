@@ -16,10 +16,11 @@ export const procesarVenta = async (datosVenta, idUsuario) => {
       
       if (!medicamento) throw new Error(`Medicamento ${item.cod_medicamento} no existe`);
       if (medicamento.stock_actual < item.cantidad) throw new Error(`Stock insuficiente para ${medicamento.nombre}`);
-      if (medicamento.requiere_receta) throw new Error(`${medicamento.nombre} requiere receta médica`);
-      
-      total += medicamento.precio_venta * item.cantidad;
-    }
+      if (medicamento.requiere_receta && !nro_receta) {
+              throw new Error(`${medicamento.nombre} requiere presentar receta médica válida.`);
+            }      
+            total += medicamento.precio_venta * item.cantidad;
+          }
 
     // 2. CREACIÓN DE LA VENTA
     const boleta = await crearBoleta({
