@@ -20,7 +20,7 @@ export const obtenerBoletasPendientes = async () => {
       include: [{
         model: Medicamento,
         as: 'medicamento',
-        attributes: ['nombre', 'requiere_receta'] // Necesario para la alerta visual (ícono rojo)
+        attributes: ['cod_medicamento', 'nombre', 'requiere_receta'] 
       }]
     }],
     order: [['fecha', 'ASC']] // Los más antiguos primero (FIFO)
