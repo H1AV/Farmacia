@@ -7,6 +7,8 @@ export default function Venta() {
   const [total, setTotal] = useState(0);
   const [codSeleccionado, setCodSeleccionado] = useState('');
   const [cantidad, setCantidad] = useState(1);
+  const [recetaBusqueda, setRecetaBusqueda] = useState('');
+  const [recetaAutorizada, setRecetaAutorizada] = useState(null);
 
   useEffect(() => {
     const cargar = async () => {
@@ -20,7 +22,9 @@ export default function Venta() {
     const med = medicamentos.find(m => m.cod_medicamento === codSeleccionado);
     if (!med) return alert('Seleccione un medicamento');
     if (med.stock_actual < cantidad) return alert('Stock insuficiente');
-    if (med.requiere_receta) return alert('Este medicamento requiere receta médica');
+    if (medicamentoSeleccionado.requiere_receta && !recetaAutorizada) {
+      return alert("Este medicamento requiere receta médica. Por favor cargue una receta primero.");
+    }
 
     const subtotal = Number(med.precio_venta) * cantidad;
     setItems([...items, { ...med, cantidad, subtotal }]);
@@ -40,6 +44,38 @@ export default function Venta() {
     }
   };
 
+  const cargarRecetaAlCarrito = async () => {
+    try {
+      if (!recetaBusqueda) return alert("Ingrese un número de receta");
+      
+      // Añadimos .trim() para limpiar espacios invisibles al inicio o final
+      const busquedaLimpia = recetaBusqueda.trim();
+      
+      const res = await api.get(`/recetas/${busquedaLimpia}`);
+      const receta = res.data.datos;
+
+      if (receta.despachada) return alert("Esta receta ya fue utilizada anteriormente.");
+
+      // Formateamos los detalles de la receta para que encajen en el carrito
+      const itemsNuevos = receta.detalles.map(det => ({
+        cod_medicamento: det.cod_medicamento,
+        nombre: det.medicamento.nombre,
+        precio_venta: det.medicamento.precio_venta,
+        cantidad: det.cantidad,
+        requiere_receta: det.medicamento.requiere_receta,
+        subtotal: det.cantidad * det.medicamento.precio_venta
+      }));
+
+      setCarrito([...carrito, ...itemsNuevos]);
+      setRecetaAutorizada(receta.nro_receta);
+      setRecetaBusqueda('');
+      alert("✅ Receta cargada. Productos añadidos al carrito.");
+
+    } catch (err) {
+      alert("❌ " + (err.response?.data?.mensaje || "Receta no encontrada"));
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6">
       {/* Panel Izquierdo: Selección */}
@@ -48,6 +84,35 @@ export default function Venta() {
           <span>🛒</span> Nueva Venta
         </h2>
         
+        {/* Buscador de Recetas */}
+      <div className="mb-6 bg-blue-50 p-4 rounded-lg flex gap-4 items-center">
+        <span className="text-2xl">📄</span>
+        <div className="flex-1">
+          <label className="block text-sm font-bold text-blue-800 mb-1">Cargar productos desde Receta Médica:</label>
+          <div className="flex gap-2">
+            <input 
+              type="text" 
+              placeholder="Ej: REC-0001" 
+              value={recetaBusqueda}
+              onChange={(e) => setRecetaBusqueda(e.target.value)}
+              className="border p-2 rounded w-64 outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <button 
+              type="button" 
+              onClick={cargarRecetaAlCarrito}
+              className="bg-blue-600 text-white font-bold px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Agregar Productos
+            </button>
+          </div>
+        </div>
+        {recetaAutorizada && (
+          <div className="bg-green-100 text-green-800 px-4 py-2 rounded-lg font-bold border border-green-300">
+            ✅ Receta Autorizada: {recetaAutorizada}
+          </div>
+        )}
+      </div>
+
         <div className="bg-blue-50 p-4 rounded-xl mb-6 flex gap-4">
           <select value={codSeleccionado} onChange={e => setCodSeleccionado(e.target.value)} className="flex-1 border-0 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400">
             <option value="">Seleccione Medicamento...</option>
