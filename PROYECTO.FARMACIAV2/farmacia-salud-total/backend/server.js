@@ -26,8 +26,8 @@ app.use('/api/v1/reportes', reporteRoutes);
 // 2. Registramos el endpoint para que el frontend pueda crear recetas
 app.use('/api/v1/recetas', recetaRoutes);
 
-sequelize.authenticate()
-  .then(() => console.log('✅ Conexión a base de datos exitosa'))
-  .catch(err => console.error('❌ Error de conexión:', err));
+sequelize.sync({ alter: true }) // <--- ESTA ES LA MAGIA
+  .then(() => console.log('✅ Conexión a BD exitosa y tablas sincronizadas'))
+  .catch(err => console.error('❌ Error de sincronización:', err));
 
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));
