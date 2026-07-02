@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
 import Login from './pages/Login';
 import Venta from './pages/Venta';
-import Despacho from './pages/Despacho';
 import ColaDespacho from './pages/ColaDespacho';
 import Inventario from './pages/Inventario';
 import Recetas from './pages/Recetas';
@@ -28,11 +27,10 @@ const MenuNavegacion = ({ children }) => {
         </div>
         <nav className="flex-1 px-4 py-6 space-y-2">
           <Link to="/ventas" className={`flex items-center gap-3 px-4 py-3 rounded-md font-medium transition-colors ${linkActivo('/ventas')}`}>🛒 Punto de Venta</Link>
-          <Link to="/despacho" className={`flex items-center gap-3 px-4 py-3 rounded-md font-medium transition-colors ${linkActivo('/despacho')}`}>📦 Despacho</Link>
+          <Link to="/cola-despacho" className={`flex items-center gap-3 px-4 py-3 rounded-md font-medium transition-colors ${linkActivo('/cola-despacho')}`}>📦 Cola de Despacho</Link>
           <Link to="/inventario" className={`flex items-center gap-3 px-4 py-3 rounded-md font-medium transition-colors ${linkActivo('/inventario')}`}>💊 Inventario</Link>
           <Link to="/recetas" className={`flex items-center gap-3 px-4 py-3 rounded-md font-medium transition-colors ${linkActivo('/recetas')}`}>📝 Recetas</Link>
           <Link to="/reportes" className={`flex items-center gap-3 px-4 py-3 rounded-md font-medium transition-colors ${linkActivo('/reportes')}`}>📊 Reportes</Link>
-          <Link to="/cola-despacho" className={`flex items-center gap-3 px-4 py-3 rounded-md font-medium transition-colors ${linkActivo('/cola-despacho')}`}>🕒 Cola de Despacho</Link>
         </nav>
         <div className="p-4 border-t">
           <button onClick={cerrarSesion} className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-100 transition">
@@ -60,11 +58,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/ventas" element={<RutaProtegida><Venta /></RutaProtegida>} />
-        <Route path="/despacho" element={<RutaProtegida><Despacho /></RutaProtegida>} />
+        <Route path="/cola-despacho" element={<RutaProtegida><ColaDespacho /></RutaProtegida>} />
         <Route path="/inventario" element={<RutaProtegida><Inventario /></RutaProtegida>} />
         <Route path="/recetas" element={<RutaProtegida><Recetas /></RutaProtegida>} />
         <Route path="/reportes" element={<RutaProtegida><Reportes /></RutaProtegida>} />
-        <Route path="/cola-despacho" element={<RutaProtegida><ColaDespacho /></RutaProtegida>} />
       </Routes>
     </Router>
   );
